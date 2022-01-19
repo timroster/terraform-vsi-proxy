@@ -116,22 +116,12 @@ variable "security_group_rules" {
   #     code=optional(number)
   #   })),
   # }))
-  description = "List of security group rules to set on the bastion security group in addition to the SSH rules"
+  description = "List of security group rules to set on the proxy security group in addition to the instance SSH rules"
   default = [
     {
-      name      = "private-network"
+      name      = "public-network"
       direction = "outbound"
-      remote    = "10.0.0.0/8"
-    },
-    {
-      name      = "service-endpoints"
-      direction = "outbound"
-      remote    = "161.26.0.0/16"
-    },
-    {
-      name      = "iaas-endpoints"
-      direction = "outbound"
-      remote    = "166.8.0.0/14"
+      remote    = "0.0.0.0/0"
     }
   ]
 }
