@@ -1,43 +1,74 @@
-name: ""
+name: vsi-proxy
 type: terraform
-description: ""
+description: Module to provision Proxy Server in a vsi image
 tags:
-    - tools
-    - devops
+    - network
+    - vpc
+    - proxy
 versions:
 - platforms: []
-#  providers:
-#    - name: ibm
-#      source: "ibm-cloud/ibm"
-  dependencies: []
-#    - id: cluster
-#      refs:
-#        - source: github.com/ibm-garage-cloud/terraform-ibm-container-platform
-#          version: ">= 1.7.0"
-#        - source: github.com/ibm-garage-cloud/terraform-k8s-ocp-cluster
-#          version: ">= 2.0.0"
-#    - id: namespace
-#      refs:
-#        - source: github.com/ibm-garage-cloud/terraform-k8s-namespace
-#          version: ">= 2.1.0"
-  variables: []
-#    - name: cluster_type
-#      moduleRef:
-#        id: cluster
-#        output: type_code
-#    - name: cluster_ingress_hostname
-#      moduleRef:
-#        id: cluster
-#        output: ingress_hostname
-#    - name: cluster_config_file
-#      moduleRef:
-#        id: cluster
-#        output: config_file_path
-#    - name: tls_secret_name
-#      moduleRef:
-#        id: cluster
-#        output: tls_secret_name
-#    - name: releases_namespace
-#      moduleRef:
-#        id: namespace
-#        output: name
+  providers:
+    - name: ibm
+      source: "ibm-cloud/ibm"
+  dependencies:
+    - id: resource_group
+      refs:
+        - source: github.com/cloud-native-toolkit/terraform-ibm-resource-group
+          version: ">= 1.0.0"
+    - id: vpc
+      refs:
+        - source: github.com/cloud-native-toolkit/terraform-ibm-vpc
+          version: ">= 1.0.0"
+    - id: subnets
+      refs:
+        - source: github.com/cloud-native-toolkit/terraform-ibm-vpc-subnets
+          version: ">= 1.0.0"
+    - id: vpcssh
+      refs:
+        - source: github.com/cloud-native-toolkit/terraform-ibm-vpc-ssh
+          version: ">= 1.0.0"
+    - id: kms_key
+      refs:
+        - source: github.com/cloud-native-toolkit/terraform-ibm-kms-key
+          version: ">= 0.0.1"
+      optional: true
+  variables:
+    - name: vpc_name
+      moduleRef:
+        id: vpc
+        output: name
+    - name: base_security_group
+      moduleRef:
+        id: vpc
+        output: base_security_group
+    - name: vpc_subnet_count
+      moduleRef:
+        id: subnets
+        output: count
+    - name: vpc_subnets
+      moduleRef:
+        id: subnets
+        output: subnets
+    - name: resource_group_id
+      moduleRef:
+        id: resource_group
+        output: id
+    - name: ssh_key_id
+      moduleRef:
+        id: vpcssh
+        output: id
+    - name: region
+      scope: global
+    - name: ibmcloud_api_key
+      scope: global
+    - name: tags
+      scope: module
+    - name: kms_key_crn
+      moduleRef:
+        id: kms_key
+        output: crn
+      optional: true
+    - name: security_group_rules
+      scope: ignore
+    - name: allow_deprecated_image
+      scope: ignore
