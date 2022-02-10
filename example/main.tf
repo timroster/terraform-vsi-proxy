@@ -4,6 +4,10 @@ terraform {
       source = "ibm-cloud/ibm"
       version = ">= 1.17"
     }
+    local = {
+      source  = "hashicorp/local"
+      version = "~> 2.0"
+    }
   }
   required_version = ">= 0.15"
 }
@@ -29,6 +33,16 @@ module "proxy" {
   vpc_subnets         = var.vpc_subnets
 }
 
+resource "local_file" "proxy-config" {
+  filename = "proxy-config.yaml"
+  content  = module.proxy.proxy-config-yaml
+}
+
+resource "local_file" "setcrioproxy" {
+  filename = "setcrioproxy.yaml"
+  content  = module.proxy.setcrioproxy-yaml
+}
+
 output "private_ip_address" {
-  value = module.proxy.private_ips
+  value = module.proxy.private_ips[0]
 }

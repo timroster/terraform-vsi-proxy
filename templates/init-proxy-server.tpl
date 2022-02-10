@@ -16,8 +16,8 @@ apt-get install -y squid
 
 ### update squid configuration to allow VPC connection from clusters
 
-###** Uncomment following entry "#acl localnet src 10.0.0.0/8" ###
-sed -i "s/^#acl localnet src 10.0.0.0\/8/acl localnet src 10.0.0.0\/8/" /etc/squid/squid.conf
+###** Replace commented acl entry for 10.0.0.0/8 with the provided network mask to allow ###
+sed -i "sX^#acl localnet src 10.0.0.0/8Xacl localnet src ${allow_network}X" /etc/squid/squid.conf
 
 ###** Uncomment following entry "#http_access allow localnet" ###
 sed -i "s/^#http_access allow localnet/http_access allow localnet/" /etc/squid/squid.conf
