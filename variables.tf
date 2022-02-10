@@ -27,7 +27,7 @@ variable "label" {
 variable "image_name" {
   type        = string
   description = "The name of the image to use for the virtual server"
-  default     = "ibm-ubuntu-18-04-5-minimal-amd64-1"
+  default     = "ibm-ubuntu-18-04-6-minimal-amd64-1"
 }
 
 variable "vpc_subnet_count" {
@@ -69,8 +69,8 @@ variable "create_public_ip" {
 
 variable "init_script" {
   type        = string
-  default     = ""
-  description = "Script to run during the instance initialization. Defaults to an Ubuntu specific script when set to empty"
+  default     = "init-proxy-server.tpl"
+  description = "Template of script to run during the instance initialization."
 }
 
 variable "tags" {
@@ -170,4 +170,10 @@ variable "target_network_range" {
   type        = string
   description = "The ip address range that should be used for the network acl rules generated from the security groups"
   default     = "0.0.0.0/0"
+}
+
+variable "allow_network" {
+  type        = string
+  description = "The ip address range that should be allowed to use the proxy server"
+  default     = "10.0.0.0/8"
 }

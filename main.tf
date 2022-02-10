@@ -29,7 +29,7 @@ data ibm_is_subnet vpc_subnet {
 }
 
 module "vsi-instance" {
-  source = "github.com/cloud-native-toolkit/terraform-ibm-vpc-vsi.git?ref=v1.11.0"
+  source = "github.com/timroster/terraform-ibm-vpc-vsi"
 
   resource_group_id    = var.resource_group_id
   region               = var.region
@@ -42,7 +42,7 @@ module "vsi-instance" {
   ssh_key_id           = var.ssh_key_id
   kms_key_crn          = var.kms_key_crn
   kms_enabled          = var.kms_enabled
-  init_script          = file("${path.module}/scripts/init-proxy-server.sh")
+  init_script          = data.cloudinit_config.this.rendered
   create_public_ip     = var.create_public_ip
   allow_ssh_from       = var.allow_ssh_from
   tags                 = local.tags
@@ -52,6 +52,19 @@ module "vsi-instance" {
   base_security_group  = var.base_security_group
   acl_rules            = var.acl_rules
   target_network_range = var.target_network_range
+}
+
+data "cloudinit_config" "this" {
+  gzip          = false
+  base64_encode = false
+
+  part {
+    filename     = "init.sh"
+    content_type = "text/x-shellscript"
+    content = templatefile("${path.module}/templates/${var.init_script}", {
+      "allow_network"  = var.allow_network
+    })
+  }
 }
 
 resource ibm_is_security_group_rule ssh_to_host_in_maintenance {
@@ -72,4 +85,14 @@ resource ibm_is_security_group_rule maintenance_ssh_inbound {
     port_min = 22
     port_max = 22
   }
+}
+
+locals {
+  proxy-config = templatefile("${path.module}/templates/_template_proxy-config.yaml", {
+    "proxy_ip" = module.vsi-instance.private_ips[0]
+  })
+  crio-config = templatefile("${path.module}/templates/_template_setcrioproxy.yaml", {
+    "proxy_ip" = module.vsi-instance.private_ips[0],
+    "cluster_local" = var.allow_network
+  })
 }

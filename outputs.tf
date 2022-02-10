@@ -46,3 +46,13 @@ output "maintenance_security_group_id" {
   description = "The id of the security group that was used"
   value       = local.base_security_group
 }
+
+output "proxy-config-yaml" {
+  description = "apply to cluster to enable system use of proxy"
+  value = local.proxy-config
+}
+
+output "setcrioproxy-yaml" {
+  description = "apply to cluster to enable system use of proxy"
+  value = local.crio-config
+}
