@@ -6,7 +6,7 @@ locals {
   base_security_group = var.base_security_group != null ? var.base_security_group : data.ibm_is_vpc.vpc.default_security_group
 }
 
-resource null_resource print-names {
+resource "null_resource" "print-names" {
   provisioner "local-exec" {
     command = "echo 'VPC name: ${var.vpc_name}'"
   }
@@ -16,42 +16,42 @@ resource null_resource print-names {
 }
 
 # get the information about the existing vpc instance
-data ibm_is_vpc vpc {
+data "ibm_is_vpc" "vpc" {
   depends_on = [null_resource.print-names]
 
-  name           = var.vpc_name
+  name = var.vpc_name
 }
 
-data ibm_is_subnet vpc_subnet {
+data "ibm_is_subnet" "vpc_subnet" {
   count = var.vpc_subnet_count
 
   identifier = var.vpc_subnets[count.index].id
 }
 
 module "vsi-instance" {
-  source = "github.com/timroster/terraform-ibm-vpc-vsi"
+  source = "github.com/cloud-native-toolkit/terraform-ibm-vpc-vsi.git?ref=v1.11.0"
 
-  resource_group_id    = var.resource_group_id
-  region               = var.region
-  ibmcloud_api_key     = var.ibmcloud_api_key
-  vpc_name             = var.vpc_name
-  vpc_subnet_count     = var.vpc_subnet_count
-  vpc_subnets          = var.vpc_subnets
-  image_name           = var.image_name
-  profile_name         = var.profile_name
-  ssh_key_id           = var.ssh_key_id
-  kms_key_crn          = var.kms_key_crn
-  kms_enabled          = var.kms_enabled
-  init_script          = data.cloudinit_config.this.rendered
-  create_public_ip     = var.create_public_ip
-  allow_ssh_from       = var.allow_ssh_from
-  tags                 = local.tags
-  security_group_rules = var.security_group_rules
-  label                = var.label
+  resource_group_id      = var.resource_group_id
+  region                 = var.region
+  ibmcloud_api_key       = var.ibmcloud_api_key
+  vpc_name               = var.vpc_name
+  vpc_subnet_count       = var.vpc_subnet_count
+  vpc_subnets            = var.vpc_subnets
+  image_name             = var.image_name
+  profile_name           = var.profile_name
+  ssh_key_id             = var.ssh_key_id
+  kms_key_crn            = var.kms_key_crn
+  kms_enabled            = var.kms_enabled
+  init_script            = data.cloudinit_config.this.rendered
+  create_public_ip       = var.create_public_ip
+  allow_ssh_from         = var.allow_ssh_from
+  tags                   = local.tags
+  security_group_rules   = var.security_group_rules
+  label                  = var.label
   allow_deprecated_image = var.allow_deprecated_image
-  base_security_group  = var.base_security_group
-  acl_rules            = var.acl_rules
-  target_network_range = var.target_network_range
+  base_security_group    = var.base_security_group
+  acl_rules              = var.acl_rules
+  target_network_range   = var.target_network_range
 }
 
 data "cloudinit_config" "this" {
@@ -62,12 +62,12 @@ data "cloudinit_config" "this" {
     filename     = "init.sh"
     content_type = "text/x-shellscript"
     content = templatefile("${path.module}/templates/${var.init_script}", {
-      "allow_network"  = var.allow_network
+      "allow_network" = var.allow_network
     })
   }
 }
 
-resource ibm_is_security_group_rule ssh_to_host_in_maintenance {
+resource "ibm_is_security_group_rule" "ssh_to_host_in_maintenance" {
   group     = module.vsi-instance.security_group_id
   direction = "outbound"
   remote    = local.base_security_group
@@ -77,7 +77,7 @@ resource ibm_is_security_group_rule ssh_to_host_in_maintenance {
   }
 }
 
-resource ibm_is_security_group_rule maintenance_ssh_inbound {
+resource "ibm_is_security_group_rule" "maintenance_ssh_inbound" {
   group     = local.base_security_group
   direction = "inbound"
   remote    = module.vsi-instance.security_group_id
@@ -92,7 +92,7 @@ locals {
     "proxy_ip" = module.vsi-instance.private_ips[0]
   })
   crio-config = templatefile("${path.module}/templates/_template_setcrioproxy.yaml", {
-    "proxy_ip" = module.vsi-instance.private_ips[0],
+    "proxy_ip"      = module.vsi-instance.private_ips[0],
     "cluster_local" = var.allow_network
   })
 }
