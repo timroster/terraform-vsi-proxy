@@ -36,7 +36,7 @@ variable "vpc_subnet_count" {
 }
 
 variable "vpc_subnets" {
-  type        = list(object({
+  type = list(object({
     label = string
     id    = string
     zone  = string
@@ -163,7 +163,7 @@ variable "acl_rules" {
   #   })),
   # }))
   description = "List of rules to set on the subnet access control list"
-  default = []
+  default     = []
 }
 
 variable "target_network_range" {
