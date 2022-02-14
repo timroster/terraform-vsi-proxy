@@ -6,7 +6,7 @@ module "subnets" {
   vpc_name          = module.vpc.name
   gateways          = module.gateways.gateways
   provision         = true
-  _count            = var.vpc_subnet_count
+  _count            = 1
   label             = "proxy"
   acl_rules         = [{
     name="inbound-ssh"
