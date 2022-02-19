@@ -1,4 +1,5 @@
 module "proxy" {
+  #source = "../.."
   source = "./module"
 
   resource_group_id      = module.resource_group.id
