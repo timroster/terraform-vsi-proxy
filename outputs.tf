@@ -47,12 +47,12 @@ output "maintenance_security_group_id" {
   value       = local.base_security_group
 }
 
-output "proxy-config-yaml" {
+output "proxy-host" {
   description = "apply to cluster to enable system use of proxy"
-  value       = local.proxy-config
+  value       = local.proxy-host
 }
 
-output "setcrioproxy-yaml" {
+output "proxy-port" {
   description = "apply to cluster to enable system use of proxy"
-  value       = local.crio-config
+  value       = local.proxy-port
 }

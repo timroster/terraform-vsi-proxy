@@ -4,14 +4,8 @@ locals {
   tags                = tolist(setsubtract(concat(var.tags, ["proxy"]), [""]))
   name                = "${replace(var.vpc_name, "/[^a-zA-Z0-9_\\-\\.]/", "")}-${var.label}"
   base_security_group = var.base_security_group != null ? var.base_security_group : data.ibm_is_vpc.vpc.default_security_group
-  proxy-ip            = var.vpc_subnet_count == 1 ? module.vsi-instance.private_ips[0] : ibm_is_lb.proxy-alb[0].hostname
-  proxy-config = templatefile("${path.module}/templates/_template_proxy-config.yaml", {
-    "proxy_ip" = local.proxy-ip
-  })
-  crio-config = templatefile("${path.module}/templates/_template_setcrioproxy.yaml", {
-    "proxy_ip"      = local.proxy-ip,
-    "cluster_local" = var.allow_network
-  })
+  proxy-host          = var.vpc_subnet_count == 1 ? module.vsi-instance.private_ips[0] : ibm_is_lb.proxy-alb[0].hostname
+  proxy-port          = "3128"
 }
 
 resource "null_resource" "print-names" {
@@ -96,7 +90,7 @@ resource "ibm_is_lb_pool" "squid_pool" {
   health_retries      = 5
   health_timeout      = 30
   health_type         = "tcp"
-  health_monitor_port = 3128
+  health_monitor_port = local.proxy-port
 }
 
 resource "ibm_is_lb_pool_member" "squid_lb_mem" {
@@ -104,7 +98,7 @@ resource "ibm_is_lb_pool_member" "squid_lb_mem" {
 
   lb             = ibm_is_lb.proxy-alb[0].id
   pool           = ibm_is_lb_pool.squid_pool[0].id
-  port           = 3128
+  port           = local.proxy-port
   target_address = module.vsi-instance.private_ips[count.index]
 }
 
@@ -113,7 +107,7 @@ resource "ibm_is_lb_listener" "squid_lb_listener" {
 
   lb           = ibm_is_lb.proxy-alb[0].id
   default_pool = ibm_is_lb_pool.squid_pool[0].id
-  port         = "3128"
+  port         = local.proxy-port
   protocol     = "tcp"
 }
 
