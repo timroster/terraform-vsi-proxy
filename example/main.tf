@@ -33,16 +33,10 @@ module "proxy" {
   vpc_subnets       = var.vpc_subnets
 }
 
-resource "local_file" "proxy-config" {
-  filename = "proxy-config.yaml"
-  content  = module.proxy.proxy-config-yaml
+output "proxy-host" {
+  value = module.proxy.proxy-host
 }
 
-resource "local_file" "setcrioproxy" {
-  filename = "setcrioproxy.yaml"
-  content  = module.proxy.setcrioproxy-yaml
-}
-
-output "private_ip_address" {
-  value = module.proxy.private_ips[0]
+output "proxy-port" {
+  value = module.proxy.proxy-port
 }
