@@ -2,7 +2,7 @@ module "proxy" {
   #source = "../.."
   source = "./module"
 
-  resource_group_id      = module.resource_group.id
+  resource_group_name    = module.resource_group.name
   region                 = var.region
   ibmcloud_api_key       = var.ibmcloud_api_key
   vpc_name               = module.vpc.name

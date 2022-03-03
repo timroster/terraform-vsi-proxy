@@ -49,10 +49,10 @@ versions:
       moduleRef:
         id: subnets
         output: subnets
-    - name: resource_group_id
+    - name: resource_group_name
       moduleRef:
         id: resource_group
-        output: id
+        output: name
     - name: ssh_key_id
       moduleRef:
         id: vpcssh
