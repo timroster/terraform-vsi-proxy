@@ -1,4 +1,4 @@
-variable "resource_group_id" {
+variable "resource_group_name" {
   type        = string
   description = "The id of the IBM Cloud resource group where the VPC has been provisioned."
 }

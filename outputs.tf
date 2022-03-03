@@ -47,12 +47,10 @@ output "maintenance_security_group_id" {
   value       = local.base_security_group
 }
 
-output "proxy-host" {
-  description = "apply to cluster to enable system use of proxy"
-  value       = local.proxy-host
-}
-
-output "proxy-port" {
-  description = "apply to cluster to enable system use of proxy"
-  value       = local.proxy-port
+output "proxy_endpoint" {
+  description = "Host and port exposed by HTTP tunnel proxy"
+  value = {
+    proxy_host = local.proxy_host
+    proxy_port = local.proxy_port
+  }
 }
