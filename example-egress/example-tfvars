@@ -1,0 +1,7 @@
+resource_group_name = ""
+region              = ""
+ibmcloud_api_key    = ""
+vpc_name            = ""
+vpc_subnet_count    = 1
+ssh_key_name        = ""
+tags                = ["network", "vpc", "proxy"]
