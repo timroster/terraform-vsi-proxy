@@ -36,7 +36,7 @@ data "ibm_is_subnet" "vpc_subnet" {
 }
 
 module "vsi-instance" {
-  source = "github.com/cloud-native-toolkit/terraform-ibm-vpc-vsi.git?ref=v1.11.0"
+  source = "github.com/cloud-native-toolkit/terraform-ibm-vpc-vsi"
 
   resource_group_id      = local.resource_group_id
   region                 = var.region
